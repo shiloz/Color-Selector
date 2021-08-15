@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="reference" content="https://summer10920.github.io/skillStudies_JS_WebDemo/colorEditor/" />
+    <meta name="reference" content="https://codepen.io/Lekennedy/pen/rNegQzv" />
+    <meta name="author" content="shiloz" />
+    <title>Color Selector</title>
+    <style>
+      body {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+        overflow: hidden;
+        margin: auto;
+      }
+
+      div.selector {
+        width: calc(90vw * 0.3);
+        height: 90vh;
+        display: flex;
+        align-items: center;
+      }
+
+      .selector input {
+        width: 100px;
+      }
+
+      .selector input.scroll {
+        width: 200px;
+      }
+
+      div.color {
+        width: calc(90vw * 0.7);
+        height: 90vh;
+        position: relative;
+      }
+
+      #red {
+        top: 35%;
+        left: 50%;
+        text-align: center;
+        transform: translate(-50%, -50%);
+        /* background: rgb(238, 14, 14); */
+      }
+
+      #green {
+        top: 65%;
+        left: 35%;
+        transform: translate(-50%, -50%);
+        /* background: rgb(23, 238, 13); */
+      }
+
+      #blue {
+        top: 65%;
+        left: 65%;
+        transform: translate(-50%, -50%);
+        /* background: rgb(34, 16, 240); */
+
+      }
+
+      #red,
+      #green,
+      #blue {
+        position: absolute;
+        width: 25vw;
+        height: 25vw;
+        border-radius: 50%;
+        /* mix-blend-mode: lighten; */
+        mix-blend-mode: screen;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="selector">
+      <div>
+        <input class="button" type="button" value="Red" onclick="ask('r')" />
+        <input class="button" type="button" value="Green" onclick="ask('g')" />
+        <input class="button" type="button" value="Blue" onclick="ask('b')" />
+      </div>
+      <div>
+        <input
+          class="scroll"
+          type="range"
+          min="0"
+          max="255"
+          id="rr"
+          oninput="sbar('r',this)"
+        />
+        <input
+          class="scroll"
+          type="range"
+          min="0"
+          max="255"
+          id="gg"
+          oninput="sbar('g',this)"
+        />
+        <input
+          class="scroll"
+          type="range"
+          min="0"
+          max="255"
+          id="bb"
+          oninput="sbar('b',this)"
+        />
+      </div>
+      <div>
+        <input
+          class="button"
+          type="button"
+          value="+"
+          onmousedown="cont('add')"
+          onmouseup="clearInterval(run)"
+          onmouseout="clearInterval(run)"
+        />
+        <input
+          class="button"
+          type="button"
+          value="-"
+          onmousedown="cont('sub')"
+          onmouseup="clearInterval(run)"
+          onmouseout="clearInterval(run)"
+        />
+        <input
+          class="button"
+          type="button"
+          value="?"
+          onmousedown="cont('rand')"
+          onmouseup="clearInterval(run)"
+          onmouseout="clearInterval(run)"
+        />
+      </div>
+    </div>
+
+    <div class="color">
+      <div id="red"></div>
+      <div id="green"></div>
+      <div id="blue"></div>
+    </div>
+
+    <script>
+      function padLeft(str) {
+        //補位數
+        str = str.toString(16);
+        return str.length >= 2 ? str : "0" + str;
+      }
+      function print_rd() {
+        //print red color
+        document.getElementById("red").style.background =
+          "rgb(" + rgb.r + "," + 14 + "," + 14 + ")";
+        document.getElementById("rr").value = rgb.r;
+      }
+      function print_gr() {
+        //print green color
+        document.getElementById("green").style.background =
+          "rgb(" + 23 + "," + rgb.g + "," + 13 + ")";
+        document.getElementById("gg").value = rgb.g;
+      }
+
+      function print_bl() {
+        //print blue color
+        document.getElementById("blue").style.backgroundColor =
+          "rgb(" + 34 + "," + 16 + "," + rgb.b + ")";
+        document.getElementById("bb").value = rgb.b;
+      }
+      function ask(clr) {
+        //詢問單色並替換
+        do {
+          newclr = prompt("輸入0~255", rgb[clr]);
+        } while (!(0 <= newclr && newclr <= 255));
+        rgb[clr] = newclr == null ? rgb[clr] : Number(newclr);
+        print_rd();
+        print_gr();
+        print_bl();
+      }
+
+      var rgb = { r: 238, g: 238, b: 238 },
+        run; //初始化
+      print_rd();
+      print_gr();
+      print_bl();
+
+      function cont(select) {
+        //連續作業
+        run = setInterval(function () {
+          switch (select) {
+            case "add":
+              if (rgb.r < 255) rgb.r++;
+              if (rgb.g < 255) rgb.g++;
+              if (rgb.b < 255) rgb.b++;
+              break;
+            case "sub":
+              if (rgb.r > 0) rgb.r--;
+              if (rgb.g > 0) rgb.g--;
+              if (rgb.b > 0) rgb.b--;
+              break;
+            case "rand":
+              rgb.r = Math.floor(Math.random() * 256);
+              rgb.g = Math.floor(Math.random() * 256);
+              rgb.b = Math.floor(Math.random() * 256);
+              break;
+          }
+          // print_rgb();
+          print_rd();
+          print_gr();
+          print_bl();
+        }, 30);
+      }
+      function sbar(clr, obj) {
+        rgb[clr] = Number(obj.value);
+        print_rd();
+        print_gr();
+        print_bl();
+      }
+    </script>
+  </body>
+</html>
